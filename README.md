@@ -16,4 +16,5 @@ DTU Energy
 
 # Used existing tools and packages
 - Astra Toolbox https://github.com/astra-toolbox/astra-toolbox
+- SpekPy https://bitbucket.org/spekpy/spekpy_release/wiki/Home
 - and more
