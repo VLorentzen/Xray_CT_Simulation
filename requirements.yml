@@ -1,0 +1,8 @@
+name: xray_sim
+dependencies:
+    - conda-forge::python
+    - astra-toolbox/label/dev astra-toolbox
+    - conda-forge::numpy
+    - conda-forge::matplotlib
+    - conda-forge::xraydb
+    
