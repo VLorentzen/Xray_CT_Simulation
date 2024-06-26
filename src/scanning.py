@@ -1,5 +1,5 @@
 """
-Goal
+Goals
     The purpose of this script is to gather ASTRA functions that together 
     generate results in the following order:
     1. func: create_projector()
