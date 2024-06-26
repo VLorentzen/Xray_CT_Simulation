@@ -1,15 +1,15 @@
 import spekpy as sp # Import SpekPy
 import matplotlib.pyplot as plt # Import library for plotting
 
-acceleration_voltage = 80*1000 #keV
+acceleration_voltage = 80 #keV
 filter_material = 'Al'
 filter_thickness = 1 #mm
 
-spek_spectrum= sp.Spek(kvp=80,th=12) # Create a spectrum
-spek_spectrum.filter('Al',1) # Filter the spectrum
+spek_spectrum= sp.Spek(kvp = acceleration_voltage, th = 12) # Create a spectrum
+spek_spectrum.filter(filter_material, filter_thickness) # Filter the spectrum
 
 hvl = spek_spectrum.get_hvl1() # Get the 1st half-value-layer
-print(hvl,'mm') # Print value to screen
+print(hvl, 'mm') # Print value to screen
 
 energy_spectrum, intensity_spectrum = spek_spectrum.get_spectrum(edges=True) # Get the spectrum
 

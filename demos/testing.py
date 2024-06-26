@@ -1,18 +1,16 @@
-import sys
-import os
-
-# Get the parent directory and add it to the sys.path
-parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-sys.path.append(parent_dir)
-
 # Standard packages
 import numpy as np
 import matplotlib.pyplot as plt
-import spekpy
+
+# Packages specifically for X-ray absorption spectroscopy
 import astra
-from src.specimen import create_obj
-from src.scanning import create_projector, polychromatic_sinogram
-from src.image_analysis import error_map
+import spekpy
+
+# Local/custom functions
+from modules.create_obj import default_obj_cfg, create_obj
+from modules.astra_functions import create_projector, polychromatic_sinogram, polychromatic_sinogram_multiple
+
+
 
 ## X-ray source definitions yielding a polychromatic beam and a beam hardened sinogram
 material = 'C'
@@ -82,9 +80,9 @@ d_obj_detector = max_n_pixels - d_source_obj
 
 # Getting a circular object to test on
 obj_dim = [n_pixels_x, n_pixels_y]
-centers = [[120*n_pixels_x/200,145*n_pixels_y/200]]
+centers = [[120,145]]
 shapes = ['circle']
-radii = [40*n_pixels_x/200]
+radii = [40]
 
 #obj = create_obj(obj_dim, centers, shapes, radii)
 
@@ -96,9 +94,9 @@ material_array = [material]
 
 
 obj_dim = [n_pixels_x, n_pixels_y]
-centers = [[120*n_pixels_x/200, 55*n_pixels_y/200]]
+centers = [[120,55]]
 shapes = ['circle']
-radii = [40*n_pixels_x/200]
+radii = [40]
 material = 'Cu'
 
 obj_dim_array.append(obj_dim)
@@ -125,6 +123,7 @@ material_array.append(material)
 obj_array = []
 for i in range(len(obj_dim_array)):
     obj = create_obj(obj_dim_array[i], centers_array[i], shapes_array[i], radii_array[i])
+    obj = obj*(i + 1)
     obj_array.append(obj)
 
 # Removing overlap from the objects
@@ -141,12 +140,12 @@ obj_total = np.sum(obj_array, axis=0)
 proj_id_array = []
 sinogram_id_array = []
 sinogram_array = []
-poly_sinogram_array = []
 
 rec_id_array = []
 rec_array = []
 rec_harden_id_array = []
 rec_harden_array = []
+
 
 
 # create multiple objs with different attenuation
@@ -156,40 +155,16 @@ for i in range(len(obj_dim_array)):
     proj_id = create_projector(obj_array[i], d_source_obj, d_obj_detector, n_pixels, proj_angles, beam)
     sinogram_id, sinogram = astra.create_sino(obj_array[i], proj_id)
     sinogram = np.transpose(sinogram)
-    poly_sinogram = polychromatic_sinogram(sinogram, material_array[i], energy_spectrum, intensity_spectrum)
-    print("converted sino to poly")
-    
+
     proj_id_array.append(proj_id)
     sinogram_id_array.append(sinogram_id)
     sinogram_array.append(sinogram)
-    poly_sinogram_array.append(poly_sinogram)
+
     
-    ## 2D Reconstruction
-    [rec_id, rec] = astra.creators.create_reconstruction("FBP", proj_id_array[i], np.transpose(sinogram_array[i]))
-    rec_id_array.append(rec_id)
-    rec_array.append(rec)
-
-    ## 2D Reconstruction of Beam Hardened
-    [rec_harden_id, rec_harden] = astra.creators.create_reconstruction("FBP", proj_id_array[i], np.transpose(poly_sinogram_array[i]) )
-    rec_harden_id_array.append(rec_harden_id)
-    rec_harden_array.append(rec_harden)
-
-
-
-# Projection and sinogram FOR JUST A SINGLE OBJ MASKING
-#proj_id = create_projector(obj, d_source_obj, d_obj_det, n_pixels_x, n_pixels_y, dim, proj_angles, beam)
-#sinogram_id, sinogram = astra.create_sino(obj, proj_id)
-#sinogram = np.transpose(sinogram)
-#poly_sinogram = polychromatic_sinogram(sinogram, material, energy_spectrum, intensity_spectrum)
-#print("converted sino to poly")
-
 
 ## Now to add them all together
 obj_combined = np.sum(obj_array, axis=0)
-#sinogram_combined = np.sum(sinogram_array, axis=0)
-#poly_sinogram_combined = np.sum(poly_sinogram_array, axis=0)
-poly_sinogram_combined = polychromatic_sinogram(sinogram_array, material_array, energy_spectrum, intensity_spectrum)
-#rec_combined = np.sum(rec_array, axis=0)
+poly_sinogram_combined = polychromatic_sinogram_multiple(sinogram_array, material_array, energy_spectrum, intensity_spectrum)
 rec_harden_combined = np.sum(rec_harden_array, axis=0)
 
 
@@ -226,21 +201,14 @@ plt.plot( rec_harden_combined[ round( np.size( rec_harden_combined,0 )/2 ),: ])
 plt.title("Combining BH Specimen after Reconstruction: profile")
 plt.show()
 
-rec_combined_error_map, rec_error_combined_euclidean_norm = error_map(rec_harden_combined, rec_harden_final)
-
 plt.figure()
-plt.imshow(rec_combined_error_map)
+plt.imshow(rec_harden_combined - rec_harden_final)
 plt.title("Beam Hardening Artifacts")
-plt.xlabel("Euclidean Norm (l2): " + str(rec_error_combined_euclidean_norm))
 plt.colorbar()
 plt.show()
 
-
-rec_error_map, rec_error_euclidean_norm = error_map(rec_harden_combined, obj_combined)
-
 plt.figure()
-plt.imshow(rec_error_map)
+plt.imshow(rec_harden_combined - obj_combined)
 plt.title("BH Specimen Reconstruction vs True Specimen")
-plt.xlabel("Euclidean Norm (l2): " + str(rec_error_euclidean_norm))
 plt.colorbar()
 plt.show()
