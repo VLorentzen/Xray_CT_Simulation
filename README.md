@@ -13,7 +13,8 @@ Victor Lorentzen, Student at Technical University of Denmark, DTU Physics
 # Supervisors
 DTU Energy:
 Peter Stanley Jørgensen,
-Salvatore di Angelo
+Salvatore de Angelis
+Big thanks to Peter and Salvatore for guiding me through this proces, both in terms of the X-Ray CT and Synchrotron Radiation Scanning methods, but also the coding/github/documentation. 
 
 # Used existing tools and packages
 - Astra Toolbox https://github.com/astra-toolbox/astra-toolbox
