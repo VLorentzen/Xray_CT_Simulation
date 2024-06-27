@@ -37,3 +37,5 @@ This can be done by:
 5. Open Spyder by typing spyder in the command line and go the folder where the repository located.
 6. Go crazy!
 
+# Documentation
+https://vlorentzen.github.io/Xray_CT_Simulation/
