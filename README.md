@@ -8,13 +8,10 @@ The purpose of this repository is to provide a simulation tool for X-ray laborat
 This tool highlights the artifacts that arise due to poly-chromatic beams. This tool is made in part to enhance the course "47209: 3D Imaging, Analysis and Modelling" at the Technical University of Denmark, DTU Energy.
 
 # Authors
-Victor Lorentzen, Student at Technical University of Denmark, DTU Physics
+Repository owner
 
 # Supervisors
-DTU Energy:
-Peter Stanley Jørgensen,
-Salvatore de Angelis
-Big thanks to Peter and Salvatore for guiding me through this proces, both in terms of the X-Ray CT and Synchrotron Radiation Scanning methods, but also the coding/github/documentation. 
+Thanks for the help from contributors concerning x-ray physics, simulations and coding/github/documentation. 
 
 # Used existing tools and packages
 - Astra Toolbox https://github.com/astra-toolbox/astra-toolbox
